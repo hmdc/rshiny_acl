@@ -1,4 +1,7 @@
 from ShinyACL import ShinyACL
+from .ShinyACLExceptions import ShinyACLUserAlreadyExists, \
+ShinyACLUserDoesNotExist, \
+ShinyACLNotAShinyApp
 from argparse import ArgumentParser
 
 class ShinyACLConsole:
@@ -20,8 +23,9 @@ Project space: {0}
     print """\
 {0}
 {1}
-{2}""".format(app, '-'*len(app), '\n'.join(self.acl.get_users(app)))
-    return None
+{2}""".format(app, '-'*len(app), 
+  (lambda users: "No users currently configured.\n" if users == [] else '\n'.join(users))(
+    self.acl.get_users(app)))
 
   def del_user(self, app, user):
     return self.acl.del_user(app, user)
@@ -48,7 +52,7 @@ Project space: {0}
      help='Adds permission for a user defined by an Google e-mail\
 address to access a specified application.')
 
-    group .add_argument('--del-user',
+    group.add_argument('--del-user',
      type=str,
      nargs=2,
      help='Removes permission for a user defined by a Google e-mail\
@@ -61,6 +65,8 @@ address to access a specified application.')
     elif args.list_users:
       try:
         self.list_users_for_application(args.list_users)
+      except ShinyACLNotAShinyApp as e:
+        print e
       except IOError as e:
         print "No such application {0} available or permission\
  denied\n{1}".format(args.list_users, e)

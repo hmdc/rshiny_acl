@@ -1,8 +1,10 @@
 import os
 import re
+import subprocess
+from .ShinyACLExceptions import ShinyACLUserAlreadyExists, \
+ShinyACLUserDoesNotExist, \
+ShinyACLNotAShinyApp
 
-NO_USERS_CONFIGURED = 1
-USER_ALREADY_EXISTS = 2
 DOTRSHINYCONF_TEMPLATE = "required_user {0};\n"
 
 class ShinyACL:
@@ -34,17 +36,24 @@ class ShinyACL:
     return path.split('/')[-1]
 
   def get_users(self,app):
-    with open('{0}/.shiny_app.conf'.format(app), 'r') as dotshinyconf:
-      users = filter(lambda l: re.findall('^required_user.*;$', l), dotshinyconf.readlines())
 
-      if len(users) == 0:
-        return NO_USERS_CONFIGURED
+    if filter(lambda (k,v): app in v, self.__apps__.iteritems()) == []:
+      raise ShinyACLNotAShinyApp(app)
 
-      return users[0].rstrip()[:-1].split(' ')[1:]
+    try:
+      with open('{0}/.shiny_app.conf'.format(app), 'r') as dotshinyconf:
+        users = filter(lambda l: re.findall('^required_user.*;$', l), dotshinyconf.readlines())
+
+        if len(users) == 0:
+          return []
+
+        return users[0].rstrip()[:-1].split(' ')[1:]
+    except IOError as e:
+      return []
 
   def add_user(self,app,username):
     if username in self.get_users(app):
-      return USER_ALREADY_EXISTS
+      raise ShinyACLUserAlreadyExists(username, app)
     else:
       return DOTRSHINYCONF_TEMPLATE.format(' '.join(self.get_users(app))
         + ' ' + username)
@@ -54,7 +63,7 @@ class ShinyACL:
       return DOTRSHINYCONF_TEMPLATE.format(' '.join(filter(
         lambda u: u != username, self.get_users(app))))
     else: 
-      return None
+      raise ShinyACLUserDoesNotExist(username, app)
 
   def reload(self):
-    return None
+    return subprocess.call(["/usr/bin/sudo", "/sbin/reload", "shiny-server"])
