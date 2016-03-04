@@ -1,6 +1,9 @@
 import os
 import re
 import subprocess
+import logging
+import logging.handlers
+import pwd
 from .ShinyACLExceptions import ShinyACLUserAlreadyExists, \
 ShinyACLUserDoesNotExist, \
 ShinyACLNotAShinyApp
@@ -11,6 +14,14 @@ class ShinyACL:
   def __init__(self):
    self.__project_spaces__ = self.__get_shiny_project_spaces__()
    self.__apps__ = self.__build_shiny_app_tree__(self.__project_spaces__)
+   self.log = logging.getLogger(__name__)
+   self.log.setLevel(logging.CRITICAL)
+
+   handler = logging.handlers.SysLogHandler(address = '/dev/log')
+   logging.Formatter('%(module)s.%(funcName)s: %(message)s')
+   handler.setFormatter(logging.Formatter('%(module)s.%(funcName)s: %(message)s'))
+
+   self.log.addHandler(handler)
    return None
 
   def __get_shiny_project_spaces__(self):
@@ -55,11 +66,20 @@ class ShinyACL:
     if username in self.get_users(app):
       raise ShinyACLUserAlreadyExists(username, app)
     else:
+      executing_user = pwd.getpwuid(os.getuid())[0]
+      self.log.critical("{0} added user {1} to {2}".format(executing_user,
+        username,
+        app))
       return DOTRSHINYCONF_TEMPLATE.format(' '.join(self.get_users(app))
         + ' ' + username)
 
   def del_user(self,app,username):
     if username in self.get_users(app):
+      executing_user = pwd.getpwuid(os.getuid())[0]
+      self.log.critical("{0} removed user {1} from {2}".format(
+        executing_user,
+        username,
+        app))
       return DOTRSHINYCONF_TEMPLATE.format(' '.join(filter(
         lambda u: u != username, self.get_users(app))))
     else: 
