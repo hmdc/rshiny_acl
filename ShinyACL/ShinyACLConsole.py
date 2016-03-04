@@ -1,7 +1,8 @@
 from ShinyACL import ShinyACL
 from .ShinyACLExceptions import ShinyACLUserAlreadyExists, \
 ShinyACLUserDoesNotExist, \
-ShinyACLNotAShinyApp
+ShinyACLNotAShinyApp, \
+ShinyACLNotAValidEmail
 from argparse import ArgumentParser
 
 class ShinyACLConsole:
@@ -73,6 +74,8 @@ address to access a specified application.')
     elif args.add_user:
       try:
         print self.acl.add_user(*args.add_user)
+      except ShinyACLNotAValidEmail as e:
+        print e 
       except IOError as e:
         print e
     elif args.del_user:

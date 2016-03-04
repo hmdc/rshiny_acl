@@ -6,7 +6,8 @@ import logging.handlers
 import pwd
 from .ShinyACLExceptions import ShinyACLUserAlreadyExists, \
 ShinyACLUserDoesNotExist, \
-ShinyACLNotAShinyApp
+ShinyACLNotAShinyApp, \
+ShinyACLNotAValidEmail
 
 DOTRSHINYCONF_TEMPLATE = "required_user {0};\n"
 
@@ -63,7 +64,12 @@ class ShinyACL:
       return []
 
   def add_user(self,app,username):
-    if username in self.get_users(app):
+    email_regex = re.compile(
+      "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
+
+    if email_regex.findall(username) == []:
+      raise ShinyACLNotAValidEmail(username)
+    elif username in self.get_users(app):
       raise ShinyACLUserAlreadyExists(username, app)
     else:
       executing_user = pwd.getpwuid(os.getuid())[0]
