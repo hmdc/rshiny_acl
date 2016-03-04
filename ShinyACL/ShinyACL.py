@@ -63,6 +63,22 @@ class ShinyACL:
     except IOError as e:
       return []
 
+  def __write__(self, app, authstring):
+    with open('{0}/.shiny_app.conf'.format(app), 'w+') as dotshinyconf:
+      data = dotshinyconf.readlines()
+      line = filter(lambda index: index >= 0, map(lambda line: None if re.findall('^required_user.*;$', line) == [] else dotshinyconf.index(line), data))
+
+      assert len(line) <= 1
+
+      # There is no such line in the file
+      if line == []:
+        dotshinyconf.write(authstring);
+      else: 
+        data[line[0]] = authstring
+        data.writelines(data)
+      
+    return None
+
   def add_user(self,app,username):
     email_regex = re.compile(
       "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
@@ -76,8 +92,8 @@ class ShinyACL:
       self.log.critical("{0} added user {1} to {2}".format(executing_user,
         username,
         app))
-      return DOTRSHINYCONF_TEMPLATE.format(' '.join(self.get_users(app))
-        + ' ' + username)
+      return self.__write__(app, DOTRSHINYCONF_TEMPLATE.format(' '.join(self.get_users(app))
+        + ' ' + username))
 
   def del_user(self,app,username):
     if username in self.get_users(app):
@@ -86,8 +102,8 @@ class ShinyACL:
         executing_user,
         username,
         app))
-      return DOTRSHINYCONF_TEMPLATE.format(' '.join(filter(
-        lambda u: u != username, self.get_users(app))))
+      return self.__write__(app, DOTRSHINYCONF_TEMPLATE.format(' '.join(filter(
+        lambda u: u != username, self.get_users(app)))))
     else: 
       raise ShinyACLUserDoesNotExist(username, app)
 
