@@ -7,5 +7,5 @@ setup(name='rshiny_acl',
       author='Evan Sarmiento',
       author_email='esarmien@g.harvard.edu',
       packages=['ShinyACL'],
-      scripts=['scripts/rshiny_acl.py']
+      scripts=['scripts/rshiny_acl']
 )
