@@ -59,7 +59,7 @@ class ShinyACL:
         if len(users) == 0:
           return []
 
-        return users[0].rstrip()[:-1].split(' ')[1:]
+        return filter(lambda u: u != '', users[0].rstrip()[:-1].split(' ')[1:])
     except IOError as e:
       return []
 
@@ -93,7 +93,7 @@ class ShinyACL:
         username,
         app))
       return self.__write__(app, DOTRSHINYCONF_TEMPLATE.format(' '.join(self.get_users(app))
-        + ' ' + username))
+        + ' ' + username.strip()))
 
   def del_user(self,app,username):
     if username in self.get_users(app):
@@ -107,5 +107,7 @@ class ShinyACL:
     else: 
       raise ShinyACLUserDoesNotExist(username, app)
 
-  def reload(self):
-    return subprocess.call(["/usr/bin/sudo", "/sbin/reload", "shiny-server"])
+  def reload(self,app):
+    with open('{0}/restart.txt'.format(app), 'a+') as restart_txt:
+      os.utime('{0}/restart.txt'.format(app), None)
+    return None    

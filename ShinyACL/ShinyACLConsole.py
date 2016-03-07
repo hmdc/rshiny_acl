@@ -73,16 +73,28 @@ address to access a specified application.')
  denied\n{1}".format(args.list_users, e)
     elif args.add_user:
       try:
-        print self.acl.add_user(*args.add_user)
+        self.acl.add_user(*args.add_user)
+        print u'\u2705   Successfully added user {0} to {1}'.format(
+          args.add_user[1].encode('utf-8'),
+          args.add_user[0].encode('utf-8'))
       except ShinyACLNotAValidEmail as e:
         print e 
       except IOError as e:
         print e
+      else:
+        self.acl.reload(args.add_user[0])
+        print u'\u2705   Reloaded shiny-server'
     elif args.del_user:
       try:
-        print self.acl.del_user(*args.del_user)
+        self.acl.del_user(*args.del_user)
+        print u'\u2705   Successfully removed user {0} from {1}'.format(
+          args.del_user[1].encode('utf-8'),
+          args.del_user[0].encode('utf-8'))
       except IOError as e:
         print e
+      else:
+        self.acl.reload(args.del_user[0])
+        print u'\u2705   Reloaded shiny server'
 
     return 0
 
