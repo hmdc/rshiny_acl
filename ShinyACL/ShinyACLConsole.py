@@ -44,18 +44,21 @@ Project space: {0}
 
     group.add_argument('--list-users',
       type=str,
+      metavar='RShinyApplicationPath',
       help='Lists users who have access to a specified application',
       default=None)
 
     group.add_argument('--add-user',
      type=str,
      nargs=2,
+     metavar=('RShinyApplicationPath', 'UserEmail'),
      help='Adds permission for a user defined by an Google e-mail\
 address to access a specified application.')
 
     group.add_argument('--del-user',
      type=str,
      nargs=2,
+     metavar=('RShinyApplicationPath', 'UserEmail'),
      help='Removes permission for a user defined by a Google e-mail\
 address to access a specified application.')
 
@@ -77,10 +80,12 @@ address to access a specified application.')
         print u'\u2705   Successfully added user {0} to {1}'.format(
           args.add_user[1].encode('utf-8'),
           args.add_user[0].encode('utf-8'))
+      except ShinyACLUserAlreadyExists as e:
+        print u'\u274C   {0}'.format(e)
       except ShinyACLNotAValidEmail as e:
-        print e 
+        print u'\u274C   {0}'.format(e)
       except IOError as e:
-        print e
+        print u'\u274C   {0}'.format(e)
       else:
         self.acl.reload(args.add_user[0])
         print u'\u2705   Reloaded shiny-server'
@@ -90,8 +95,10 @@ address to access a specified application.')
         print u'\u2705   Successfully removed user {0} from {1}'.format(
           args.del_user[1].encode('utf-8'),
           args.del_user[0].encode('utf-8'))
+      except ShinyACLUserDoesNotExist as e:
+        print u'\u274C   {0}'.format(e)
       except IOError as e:
-        print e
+        print u'\u274C   {0}'.format(e)
       else:
         self.acl.reload(args.del_user[0])
         print u'\u2705   Reloaded shiny server'
