@@ -50,15 +50,16 @@ Project space: {0}
 
     group.add_argument('--add-user',
      type=str,
-     nargs=2,
-     metavar=('RShinyApplicationPath', 'UserEmail'),
+     nargs='*',
+     metavar=('RShinyApplicationPath', 'UserEmails'),
      help='Adds permission for a user defined by an Google e-mail\
-address to access a specified application.')
+address to access a specified application. Separate multiple e-mails by\
+spaces.')
 
     group.add_argument('--del-user',
      type=str,
-     nargs=2,
-     metavar=('RShinyApplicationPath', 'UserEmail'),
+     nargs='*',
+     metavar=('RShinyApplicationPath', 'UserEmails'),
      help='Removes permission for a user defined by a Google e-mail\
 address to access a specified application.')
 
@@ -76,10 +77,12 @@ address to access a specified application.')
  denied\n{1}".format(args.list_users, e)
     elif args.add_user:
       try:
-        self.acl.add_user(*args.add_user)
-        print u'\u2705   Successfully added user {0} to {1}'.format(
-          args.add_user[1].encode('utf-8'),
+        self.acl.add_user(args.add_user[0], args.add_user[1:])
+        print u'\u2705   Successfully added user(s) {0} to {1}'.format(
+          ' '.join(args.add_user[1:]).encode('utf-8'),
           args.add_user[0].encode('utf-8'))
+      except ShinyACLNotAShinyApp as e:
+        print e
       except ShinyACLUserAlreadyExists as e:
         print u'\u274C   {0}'.format(e)
       except ShinyACLNotAValidEmail as e:
@@ -91,9 +94,9 @@ address to access a specified application.')
         print u'\u2705   Reloaded shiny-server'
     elif args.del_user:
       try:
-        self.acl.del_user(*args.del_user)
-        print u'\u2705   Successfully removed user {0} from {1}'.format(
-          args.del_user[1].encode('utf-8'),
+        self.acl.del_user(args.del_user[0], args.del_user[1:])
+        print u'\u2705   Successfully removed user(s) {0} from {1}'.format(
+          ' '.join(args.del_user[1:]).encode('utf-8'),
           args.del_user[0].encode('utf-8'))
       except ShinyACLUserDoesNotExist as e:
         print u'\u274C   {0}'.format(e)

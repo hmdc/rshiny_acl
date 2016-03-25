@@ -79,33 +79,40 @@ class ShinyACL:
       
     return None
 
-  def add_user(self,app,username):
+  def add_user(self,app,usernames):
     email_regex = re.compile(
       "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
 
-    if email_regex.findall(username) == []:
-      raise ShinyACLNotAValidEmail(username)
-    elif username in self.get_users(app):
-      raise ShinyACLUserAlreadyExists(username, app)
-    else:
-      executing_user = pwd.getpwuid(os.getuid())[0]
-      self.log.critical("{0} added user {1} to {2}".format(executing_user,
-        username,
-        app))
-      return self.__write__(app, DOTRSHINYCONF_TEMPLATE.format(' '.join(self.get_users(app))
-        + ' ' + username.strip()))
+    for username in usernames:
+      if email_regex.findall(username) == []:
+        raise ShinyACLNotAValidEmail(username)
+      elif username in self.get_users(app):
+        raise ShinyACLUserAlreadyExists(username, app)
+      else:
+        executing_user = pwd.getpwuid(os.getuid())[0]
+        self.log.critical("{0} added user {1} to {2}".format(executing_user,
+          username,
+          app))
+        self.__write__(app, DOTRSHINYCONF_TEMPLATE.format(' '.join(self.get_users(app))
+          + ' ' + username.strip()))
 
-  def del_user(self,app,username):
-    if username in self.get_users(app):
-      executing_user = pwd.getpwuid(os.getuid())[0]
-      self.log.critical("{0} removed user {1} from {2}".format(
-        executing_user,
-        username,
-        app))
-      return self.__write__(app, DOTRSHINYCONF_TEMPLATE.format(' '.join(filter(
-        lambda u: u != username, self.get_users(app)))))
-    else: 
-      raise ShinyACLUserDoesNotExist(username, app)
+    return None
+
+  def del_user(self,app,usernames):
+
+    for username in usernames:
+      if username in self.get_users(app):
+        executing_user = pwd.getpwuid(os.getuid())[0]
+        self.log.critical("{0} removed user {1} from {2}".format(
+          executing_user,
+          username,
+          app))
+        self.__write__(app, DOTRSHINYCONF_TEMPLATE.format(' '.join(filter(
+          lambda u: u != username, self.get_users(app)))))
+      else: 
+        raise ShinyACLUserDoesNotExist(username, app)
+
+    return None
 
   def reload(self,app):
     with open('{0}/restart.txt'.format(app), 'a+') as restart_txt:
