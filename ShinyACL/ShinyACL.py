@@ -12,8 +12,11 @@ ShinyACLNotAValidEmail
 DOTRSHINYCONF_TEMPLATE = "required_user {0};\n"
 
 class ShinyACL:
-  def __init__(self):
-   self.__project_spaces__ = self.__get_shiny_project_spaces__()
+  def __init__(self,
+   __root__ = '{0}/shared_space'.format(os.path.expanduser('~'))):
+
+   self.__root__ = __root__
+   self.__project_spaces__ = self.__get_shiny_project_spaces__(self.__root__)
    self.__apps__ = self.__build_shiny_app_tree__(self.__project_spaces__)
    self.log = logging.getLogger(__name__)
    self.log.setLevel(logging.CRITICAL)
@@ -25,8 +28,7 @@ class ShinyACL:
    self.log.addHandler(handler)
    return None
 
-  def __get_shiny_project_spaces__(self):
-   __root__ = '{0}/shared_space'.format(os.path.expanduser('~'))
+  def __get_shiny_project_spaces__(self, __root__):
    return filter(lambda t: 'shinyserver' in t.split('/'),
     map(lambda d: os.path.realpath(os.path.join(__root__, d)),
       os.listdir(__root__)))
