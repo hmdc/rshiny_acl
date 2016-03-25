@@ -10,6 +10,15 @@ class ShinyACLConsole:
     self.acl = ShinyACL()
 
   def list_applications(self):
+    if self.acl.__apps__ == {}:
+
+      print u'\u274C   {0}'.format("You currently have no rShiny\
+ projects defined in your ~/shared_space.\n    If you were recently added\
+ to a project space, please wait up to fifteen minutes to your\
+ project space to appear.\n    If the problem persists, please email:\
+ rce_services@help.hmdc.harvard.edu")
+      return None
+
     for key, value in self.acl.__apps__.iteritems():
       print """\
 Project space: {0}
