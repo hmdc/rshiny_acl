@@ -1,5 +1,6 @@
 import pytest
 import os
+from datetime import datetime
 
 class TestShinyACLClass:
   def test_if_no_project_directory(self, shinyacl):
@@ -80,4 +81,50 @@ class TestShinyACLClass:
       acl.add_user('{0}/fixtures/nfs/www/shinyserver/project/app3'.
                      format(os.path.dirname(os.path.realpath(__file__))),
                    'a@a.com')
+
+  def test_add_user_email(self, shinyacl):
+    acl = shinyacl("{0}/fixtures/shared_space".format(
+                     os.path.dirname(os.path.realpath(__file__))))
+
+    app = '{0}/fixtures/nfs/www/shinyserver/project/app4'.format(
+            os.path.dirname(os.path.realpath(__file__)))
+
+    acl.add_user(app, ['a@a.com'])
+
+    assert acl.get_users(app) == ['a@a.com']
+
+  
+  def test_del_user_email(self, shinyacl):
+
+    acl = shinyacl("{0}/fixtures/shared_space".format(
+                     os.path.dirname(os.path.realpath(__file__))))
+
+    app = '{0}/fixtures/nfs/www/shinyserver/project/app4'.format(
+            os.path.dirname(os.path.realpath(__file__)))
+
+    acl.del_user(app, ['a@a.com'])
+
+    assert acl.get_users(app) == []
+
+  def test_reload(self, shinyacl):
+  
+    acl = shinyacl("{0}/fixtures/shared_space".format(
+                     os.path.dirname(os.path.realpath(__file__))))
+
+    app = '{0}/fixtures/nfs/www/shinyserver/project/app4'.format(
+            os.path.dirname(os.path.realpath(__file__)))
+
+    restart_txt = '{0}/restart.txt'.format(app)
+
+    now = datetime.now()
+
+    acl.reload(app)
+
+    assert os.path.isfile(restart_txt)
+
+    mtime_restart = \
+    datetime.fromtimestamp(os.path.getmtime(restart_txt))
+
+    # Make sure timestamp was updated.
+    assert mtime_restart > now
 
