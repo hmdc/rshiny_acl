@@ -10,3 +10,6 @@
 /*.egg-info
 
 /doc/build
+
+# Tests
+/tests/__pycache__
