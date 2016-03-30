@@ -6,6 +6,6 @@ setup(name='rshiny_acl',
       url='https://github.com/hmdc/rshiny_acl',
       author='Evan Sarmiento',
       author_email='esarmien@g.harvard.edu',
-      packages=['ShinyACL'],
+      packages=['shinyacl'],
       scripts=['scripts/rshiny_acl']
 )
