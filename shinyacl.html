@@ -1,0 +1,656 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>shinyacl package &mdash; RShiny ACL 1.0.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="RShiny ACL 1.0.0 documentation" href="index.html"/>
+        <link rel="up" title="&lt;no title&gt;" href="modules.html"/>
+        <link rel="prev" title="&lt;no title&gt;" href="modules.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> RShiny ACL
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="frontpage.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">shinyacl package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-shinyacl.ShinyACL">shinyacl.ShinyACL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-shinyacl.ShinyACLConsole">shinyacl.ShinyACLConsole</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-shinyacl.ShinyACLExceptions">shinyacl.ShinyACLExceptions</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">RShiny ACL</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="modules.html">&lt;no title&gt;</a> &raquo;</li>
+      
+    <li>shinyacl package</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/shinyacl.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="shinyacl-package">
+<h1>shinyacl package</h1>
+<div class="section" id="module-shinyacl.ShinyACL">
+<span id="shinyacl-shinyacl"></span><h2>shinyacl.ShinyACL</h2>
+<p>The ShinyACL module provides functionality to add and remove users from
+.shiny.conf files inside Shiny application directires. The ShinyACL
+module also handles application restarts via restart.txt when ACLs for
+an application has changed</p>
+<dl class="class">
+<dt id="shinyacl.ShinyACL.ShinyACL">
+<em class="property">class </em><code class="descclassname">shinyacl.ShinyACL.</code><code class="descname">ShinyACL</code><span class="sig-paren">(</span><em>__root__='/nfs/home/E/esarmien/shared_space'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/shinyacl/ShinyACL.html#ShinyACL"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>The ShinyACL class provides methods which add, remove users to an 
+application&#8217;s ACL in .shiny.conf and restarts that application.</p>
+<dl class="method">
+<dt id="shinyacl.ShinyACL.ShinyACL.__build_shiny_app_tree__">
+<code class="descname">__build_shiny_app_tree__</code><span class="sig-paren">(</span><em>projectspaces</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/shinyacl/ShinyACL.html#ShinyACL.__build_shiny_app_tree__"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Builds a hash mapping of project directories to apps in those
+project directories.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>projectspaces</strong> (<code class="docutils literal"><span class="pre">list</span></code>) &#8211; An array of project spaces, usually this is
+the resultant list from
+<code class="docutils literal"><span class="pre">__get_shiny_project_spaces__</span></code></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">dict</span></code></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">shinyacl</span> <span class="kn">import</span> <span class="n">ShinyACL</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">acl</span> <span class="o">=</span> <span class="n">ShinyACL</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">acl</span><span class="o">.</span><span class="n">__build_shiny_app_tree</span><span class="p">(</span><span class="n">acl</span><span class="o">.</span><span class="n">__get_shiny_project_spaces__</span><span class="p">(</span><span class="s">&#39;/nfs/home/E/esarmien/shared_space&#39;</span><span class="p">))</span>
+<span class="go">{&#39;/nfs/www/shinyserver/vpal&#39;: [&#39;/nfs/www/shinyserver/vpal/test_irt&#39;,</span>
+<span class="go">&#39;/nfs/www/shinyserver/vpal/irt_working&#39;,</span>
+<span class="go">&#39;/nfs/www/shinyserver/vpal/hello&#39;,</span>
+<span class="go">&#39;/nfs/www/shinyserver/vpal/courseviz&#39;,</span>
+<span class="go">&#39;/nfs/www/shinyserver/vpal/hello_protected&#39;]}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="shinyacl.ShinyACL.ShinyACL.__get_shiny_project_spaces__">
+<code class="descname">__get_shiny_project_spaces__</code><span class="sig-paren">(</span><em>__root__</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/shinyacl/ShinyACL.html#ShinyACL.__get_shiny_project_spaces__"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns an array of project spaces in <code class="docutils literal"><span class="pre">__root__</span></code> directory.
+Determines if this is a shinyserver project space by looking at
+the full path of the symlink, if it includes shinyserver.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>__root__</strong> (<code class="docutils literal"><span class="pre">str</span></code>) &#8211; Location of shared_space project directories</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">list</span></code></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">shinyacl</span> <span class="kn">import</span> <span class="n">ShinyACL</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ShinyACL</span><span class="p">()</span><span class="o">.</span><span class="n">__get_shiny_project_spaces__</span><span class="p">(</span><span class="s">&#39;/nfs/home/E/esarmien/shared_space&#39;</span><span class="p">)</span>
+<span class="go">[&#39;/nfs/www/shinyserver/vpal&#39;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="shinyacl.ShinyACL.ShinyACL.__get_shiny_sub_apps__">
+<code class="descname">__get_shiny_sub_apps__</code><span class="sig-paren">(</span><em>projectspace</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/shinyacl/ShinyACL.html#ShinyACL.__get_shiny_sub_apps__"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns a list of apps belonging to an rShiny project space. A
+directory is determined to be an rShiny app if it has a <code class="docutils literal"><span class="pre">server.R</span></code>
+file in it.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>projectspace</strong> (<code class="docutils literal"><span class="pre">str</span></code>) &#8211; Fully qualified path to project space</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">list</span></code></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">shinyacl</span> <span class="kn">import</span> <span class="n">ShinyACL</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ShinyACL</span><span class="p">()</span><span class="o">.</span><span class="n">__get_shiny_sub_apps</span><span class="p">(</span><span class="s">&#39;/nfs/www/shinyserver/vpal&#39;</span><span class="p">)</span>
+<span class="go">[&#39;/nfs/www/shinyserver/vpal/test_irt&#39;,</span>
+<span class="go">&#39;/nfs/www/shinyserver/vpal/irt_working&#39;,</span>
+<span class="gp">...</span>
+<span class="go">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="shinyacl.ShinyACL.ShinyACL.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>__root__='/nfs/home/E/esarmien/shared_space'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/shinyacl/ShinyACL.html#ShinyACL.__init__"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>ShinyACL class initialization method.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>__root__</strong> (<code class="docutils literal"><span class="pre">str</span></code>) &#8211; Optional, specifies where to look for shared_space
+directories</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">shinyacl</span> <span class="kn">import</span> <span class="n">ShinyACL</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">acl</span> <span class="o">=</span> <span class="n">ShinyACL</span><span class="p">()</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">shinyacl</span> <span class="kn">import</span> <span class="n">ShinyACL</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">acl</span> <span class="o">=</span> <span class="n">ShinyACL</span><span class="p">(</span><span class="s">&#39;/some/other/path&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="shinyacl.ShinyACL.ShinyACL.__module__">
+<code class="descname">__module__</code><em class="property"> = 'shinyacl.ShinyACL'</em></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="shinyacl.ShinyACL.ShinyACL.__write__">
+<code class="descname">__write__</code><span class="sig-paren">(</span><em>app</em>, <em>authstring</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/shinyacl/ShinyACL.html#ShinyACL.__write__"><span class="viewcode-link">[source]</span></a></dt>
+<dd><dl class="docutils">
+<dt>Writes the <code class="docutils literal"><span class="pre">.shiny_app.conf</span></code> file inside the app directory by</dt>
+<dd>modifying the required_user line. No need to use this as higher
+level methods like <code class="docutils literal"><span class="pre">add_user</span></code> call this function with the
+proper arguments.</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>app</strong> (<code class="docutils literal"><span class="pre">str</span></code>) &#8211; Fully qualified path to application directory</li>
+<li><strong>authstring</strong> (<code class="docutils literal"><span class="pre">str</span></code>) &#8211; The authentication line to write</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">shinyacl</span> <span class="kn">import</span> <span class="n">ShinyACL</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ShinyACL</span><span class="p">()</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;/nfs/www/shinyserver/vpal/hello&#39;</span><span class="p">,</span>
+<span class="go">      &#39;required_user esarmien@g.harvard.edu;&#39;)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="shinyacl.ShinyACL.ShinyACL.add_user">
+<code class="descname">add_user</code><span class="sig-paren">(</span><em>app</em>, <em>usernames</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/shinyacl/ShinyACL.html#ShinyACL.add_user"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Adds usernames to <code class="docutils literal"><span class="pre">.shiny_app.conf</span></code> for the specified app.
+Logs action to syslog per HEISP.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>app</strong> (<code class="docutils literal"><span class="pre">str</span></code>) &#8211; Fully qualified path to application directory</li>
+<li><strong>usernames</strong> (<code class="docutils literal"><span class="pre">list</span></code>) &#8211; Array of usernames to add</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Retval:</th><td class="field-body"><p class="first"><code class="docutils literal"><span class="pre">None</span></code></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><code class="docutils literal"><span class="pre">None</span></code></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><a class="reference internal" href="#shinyacl.ShinyACLExceptions.ShinyACLNotAValidEmail" title="shinyacl.ShinyACLExceptions.ShinyACLNotAValidEmail"><code class="xref py py-exc docutils literal"><span class="pre">shinyacl.ShinyACLExceptions.ShinyACLNotAValidEmail</span></code></a></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><a class="reference internal" href="#shinyacl.ShinyACLExceptions.ShinyACLUserAlreadyExists" title="shinyacl.ShinyACLExceptions.ShinyACLUserAlreadyExists"><code class="xref py py-exc docutils literal"><span class="pre">shinyacl.ShinyACLExceptions.ShinyACLUserAlreadyExists</span></code></a></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">shinyacl</span> <span class="kn">import</span> <span class="n">ShinyACL</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ShinyACL</span><span class="p">()</span><span class="o">.</span><span class="n">add_user</span><span class="p">(</span><span class="s">&#39;/nfs/www/shinyserver/vpal/hello&#39;</span><span class="p">,</span>
+<span class="go">      &#39;esarmien@g.harvard.edu&#39;)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="shinyacl.ShinyACL.ShinyACL.del_user">
+<code class="descname">del_user</code><span class="sig-paren">(</span><em>app</em>, <em>usernames</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/shinyacl/ShinyACL.html#ShinyACL.del_user"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Removes usernames from <code class="docutils literal"><span class="pre">.shiny_app.conf</span></code> for specified app.
+Logs action to syslog per HEISP.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>app</strong> (<code class="docutils literal"><span class="pre">str</span></code>) &#8211; Fully qualified path to application directory</li>
+<li><strong>usernames</strong> (<code class="docutils literal"><span class="pre">list</span></code>) &#8211; Array of usernames to add</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Retval:</th><td class="field-body"><p class="first"><code class="docutils literal"><span class="pre">None</span></code></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><code class="docutils literal"><span class="pre">None</span></code></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><a class="reference internal" href="#shinyacl.ShinyACLExceptions.ShinyACLUserDoesNotExist" title="shinyacl.ShinyACLExceptions.ShinyACLUserDoesNotExist"><code class="xref py py-exc docutils literal"><span class="pre">shinyacl.ShinyACLExceptions.ShinyACLUserDoesNotExist</span></code></a></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">shinyacl</span> <span class="kn">import</span> <span class="n">ShinyACL</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ShinyACL</span><span class="p">()</span><span class="o">.</span><span class="n">del_user</span><span class="p">(</span><span class="s">&#39;/nfs/www/shinyserver/vpal/hello&#39;</span><span class="p">,</span>
+<span class="go">      &#39;esarmien@g.harvard.edu&#39;)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="shinyacl.ShinyACL.ShinyACL.get_users">
+<code class="descname">get_users</code><span class="sig-paren">(</span><em>app</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/shinyacl/ShinyACL.html#ShinyACL.get_users"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns a list of users which are allowed to access an application.
+Raises exception if the <code class="docutils literal"><span class="pre">app</span></code> argument is a path which is not a
+RShiny application. Returns an empty array if no users or configured
+or if <code class="docutils literal"><span class="pre">.shiny_app.conf</span></code> does not exist in the app directory.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>app</strong> (<code class="docutils literal"><span class="pre">str</span></code>) &#8211; Fully qualified path to application directory</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">list</span></code></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference internal" href="#shinyacl.ShinyACLExceptions.ShinyACLNotAShinyApp" title="shinyacl.ShinyACLExceptions.ShinyACLNotAShinyApp"><code class="xref py py-exc docutils literal"><span class="pre">shinyacl.ShinyACLExceptions.ShinyACLNotAShinyApp</span></code></a></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">shinyacl</span> <span class="kn">import</span> <span class="n">ShinyACL</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ShinyACL</span><span class="p">()</span><span class="o">.</span><span class="n">get_users</span><span class="p">(</span><span class="s">&#39;/nfs/www/shinyserver/vpal/hello&#39;</span><span class="p">)</span>
+<span class="go">[&#39;dtingley@g.harvard.edu&#39;, &#39;v@v.com&#39;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="shinyacl.ShinyACL.ShinyACL.reload">
+<code class="descname">reload</code><span class="sig-paren">(</span><em>app</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/shinyacl/ShinyACL.html#ShinyACL.reload"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Restarts an application by touching a <code class="docutils literal"><span class="pre">restart.txt</span></code> file in the
+application path and changing it&#8217;s mtime.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>app</strong> (<code class="docutils literal"><span class="pre">str</span></code>) &#8211; Fully qualified path to application directory</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Retval:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">shinyacl</span> <span class="kn">import</span> <span class="n">ShinyACL</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ShinyACL</span><span class="p">()</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="s">&#39;/nfs/www/shinyserver/vpal/hello&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-shinyacl.ShinyACLConsole">
+<span id="shinyacl-shinyaclconsole"></span><h2>shinyacl.ShinyACLConsole</h2>
+<p>The ShinyAClConsole module provides a CLI.</p>
+<dl class="class">
+<dt id="shinyacl.ShinyACLConsole.ShinyACLConsole">
+<em class="property">class </em><code class="descclassname">shinyacl.ShinyACLConsole.</code><code class="descname">ShinyACLConsole</code><a class="reference internal" href="_modules/shinyacl/ShinyACLConsole.html#ShinyACLConsole"><span class="viewcode-link">[source]</span></a></dt>
+<dd><dl class="method">
+<dt id="shinyacl.ShinyACLConsole.ShinyACLConsole.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/shinyacl/ShinyACLConsole.html#ShinyACLConsole.__init__"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>This simply initiates a <code class="docutils literal"><span class="pre">ShinyACL</span></code> object.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="shinyacl.ShinyACLConsole.ShinyACLConsole.__module__">
+<code class="descname">__module__</code><em class="property"> = 'shinyacl.ShinyACLConsole'</em></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="shinyacl.ShinyACLConsole.ShinyACLConsole.del_user">
+<code class="descname">del_user</code><span class="sig-paren">(</span><em>app</em>, <em>user</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/shinyacl/ShinyACLConsole.html#ShinyACLConsole.del_user"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Deletes a user based on CLI input</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="shinyacl.ShinyACLConsole.ShinyACLConsole.list_applications">
+<code class="descname">list_applications</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/shinyacl/ShinyACLConsole.html#ShinyACLConsole.list_applications"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Prints a tabulated list of applications belonging to user.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="shinyacl.ShinyACLConsole.ShinyACLConsole.list_users_for_application">
+<code class="descname">list_users_for_application</code><span class="sig-paren">(</span><em>app</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/shinyacl/ShinyACLConsole.html#ShinyACLConsole.list_users_for_application"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Lists users for a specified application, gathered from CLI
+input.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="shinyacl.ShinyACLConsole.ShinyACLConsole.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/shinyacl/ShinyACLConsole.html#ShinyACLConsole.run"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Main function. Parses arguments and runs associated commands.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-shinyacl.ShinyACLExceptions">
+<span id="shinyacl-shinyaclexceptions"></span><h2>shinyacl.ShinyACLExceptions</h2>
+<dl class="exception">
+<dt id="shinyacl.ShinyACLExceptions.ShinyACLNotAShinyApp">
+<em class="property">exception </em><code class="descclassname">shinyacl.ShinyACLExceptions.</code><code class="descname">ShinyACLNotAShinyApp</code><span class="sig-paren">(</span><em>appdir</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/shinyacl/ShinyACLExceptions.html#ShinyACLNotAShinyApp"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></code></p>
+<dl class="method">
+<dt id="shinyacl.ShinyACLExceptions.ShinyACLNotAShinyApp.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>appdir</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/shinyacl/ShinyACLExceptions.html#ShinyACLNotAShinyApp.__init__"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="shinyacl.ShinyACLExceptions.ShinyACLNotAShinyApp.__module__">
+<code class="descname">__module__</code><em class="property"> = 'shinyacl.ShinyACLExceptions'</em></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="shinyacl.ShinyACLExceptions.ShinyACLNotAShinyApp.__str__">
+<code class="descname">__str__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/shinyacl/ShinyACLExceptions.html#ShinyACLNotAShinyApp.__str__"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="shinyacl.ShinyACLExceptions.ShinyACLNotAShinyApp.__weakref__">
+<code class="descname">__weakref__</code></dt>
+<dd><p>list of weak references to the object (if defined)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="shinyacl.ShinyACLExceptions.ShinyACLNotAValidEmail">
+<em class="property">exception </em><code class="descclassname">shinyacl.ShinyACLExceptions.</code><code class="descname">ShinyACLNotAValidEmail</code><span class="sig-paren">(</span><em>user</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/shinyacl/ShinyACLExceptions.html#ShinyACLNotAValidEmail"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></code></p>
+<dl class="method">
+<dt id="shinyacl.ShinyACLExceptions.ShinyACLNotAValidEmail.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>user</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/shinyacl/ShinyACLExceptions.html#ShinyACLNotAValidEmail.__init__"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="shinyacl.ShinyACLExceptions.ShinyACLNotAValidEmail.__module__">
+<code class="descname">__module__</code><em class="property"> = 'shinyacl.ShinyACLExceptions'</em></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="shinyacl.ShinyACLExceptions.ShinyACLNotAValidEmail.__str__">
+<code class="descname">__str__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/shinyacl/ShinyACLExceptions.html#ShinyACLNotAValidEmail.__str__"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="shinyacl.ShinyACLExceptions.ShinyACLNotAValidEmail.__weakref__">
+<code class="descname">__weakref__</code></dt>
+<dd><p>list of weak references to the object (if defined)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="shinyacl.ShinyACLExceptions.ShinyACLUserAlreadyExists">
+<em class="property">exception </em><code class="descclassname">shinyacl.ShinyACLExceptions.</code><code class="descname">ShinyACLUserAlreadyExists</code><span class="sig-paren">(</span><em>user</em>, <em>app</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/shinyacl/ShinyACLExceptions.html#ShinyACLUserAlreadyExists"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></code></p>
+<dl class="method">
+<dt id="shinyacl.ShinyACLExceptions.ShinyACLUserAlreadyExists.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>user</em>, <em>app</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/shinyacl/ShinyACLExceptions.html#ShinyACLUserAlreadyExists.__init__"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="shinyacl.ShinyACLExceptions.ShinyACLUserAlreadyExists.__module__">
+<code class="descname">__module__</code><em class="property"> = 'shinyacl.ShinyACLExceptions'</em></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="shinyacl.ShinyACLExceptions.ShinyACLUserAlreadyExists.__str__">
+<code class="descname">__str__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/shinyacl/ShinyACLExceptions.html#ShinyACLUserAlreadyExists.__str__"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="shinyacl.ShinyACLExceptions.ShinyACLUserAlreadyExists.__weakref__">
+<code class="descname">__weakref__</code></dt>
+<dd><p>list of weak references to the object (if defined)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="shinyacl.ShinyACLExceptions.ShinyACLUserDoesNotExist">
+<em class="property">exception </em><code class="descclassname">shinyacl.ShinyACLExceptions.</code><code class="descname">ShinyACLUserDoesNotExist</code><span class="sig-paren">(</span><em>user</em>, <em>app</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/shinyacl/ShinyACLExceptions.html#ShinyACLUserDoesNotExist"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></code></p>
+<dl class="method">
+<dt id="shinyacl.ShinyACLExceptions.ShinyACLUserDoesNotExist.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>user</em>, <em>app</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/shinyacl/ShinyACLExceptions.html#ShinyACLUserDoesNotExist.__init__"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="shinyacl.ShinyACLExceptions.ShinyACLUserDoesNotExist.__module__">
+<code class="descname">__module__</code><em class="property"> = 'shinyacl.ShinyACLExceptions'</em></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="shinyacl.ShinyACLExceptions.ShinyACLUserDoesNotExist.__str__">
+<code class="descname">__str__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/shinyacl/ShinyACLExceptions.html#ShinyACLUserDoesNotExist.__str__"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="shinyacl.ShinyACLExceptions.ShinyACLUserDoesNotExist.__weakref__">
+<code class="descname">__weakref__</code></dt>
+<dd><p>list of weak references to the object (if defined)</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="modules.html" class="btn btn-neutral" title="&lt;no title&gt;" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Evan Sarmiento.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.0.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

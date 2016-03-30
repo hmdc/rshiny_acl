@@ -1,0 +1,327 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>shinyacl.ShinyACLConsole &mdash; RShiny ACL 1.0.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="RShiny ACL 1.0.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> RShiny ACL
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../frontpage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_documentation.html">Operations/Development Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">RShiny ACL</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>shinyacl.ShinyACLConsole</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for shinyacl.ShinyACLConsole</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The ShinyAClConsole module provides a CLI.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&quot;Evan Sarmiento&quot;</span>
+<span class="n">__email__</span> <span class="o">=</span> <span class="s">&quot;esarmien@g.harvard.edu&quot;</span>
+
+<span class="kn">from</span> <span class="nn">shinyacl</span> <span class="kn">import</span> <span class="n">ShinyACL</span><span class="p">,</span> \
+<span class="n">ShinyACLUserAlreadyExists</span><span class="p">,</span> \
+<span class="n">ShinyACLUserDoesNotExist</span><span class="p">,</span> \
+<span class="n">ShinyACLNotAShinyApp</span><span class="p">,</span> \
+<span class="n">ShinyACLNotAValidEmail</span>
+<span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">ArgumentParser</span>
+
+<div class="viewcode-block" id="ShinyACLConsole"><a class="viewcode-back" href="../../shinyacl.html#shinyacl.ShinyACLConsole.ShinyACLConsole">[docs]</a><span class="k">class</span> <span class="nc">ShinyACLConsole</span><span class="p">:</span>
+<div class="viewcode-block" id="ShinyACLConsole.__init__"><a class="viewcode-back" href="../../shinyacl.html#shinyacl.ShinyACLConsole.ShinyACLConsole.__init__">[docs]</a>  <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This simply initiates a ``ShinyACL`` object.&quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">acl</span> <span class="o">=</span> <span class="n">ShinyACL</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="ShinyACLConsole.list_applications"><a class="viewcode-back" href="../../shinyacl.html#shinyacl.ShinyACLConsole.ShinyACLConsole.list_applications">[docs]</a>  <span class="k">def</span> <span class="nf">list_applications</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Prints a tabulated list of applications belonging to user.&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">acl</span><span class="o">.</span><span class="n">__apps__</span> <span class="o">==</span> <span class="p">{}:</span>
+
+      <span class="k">print</span> <span class="s">u&#39;</span><span class="se">\u274C</span><span class="s">   {0}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;You currently have no rShiny</span><span class="se">\</span>
+<span class="s"> projects defined in your ~/shared_space.</span><span class="se">\n</span><span class="s">    If you were recently added</span><span class="se">\</span>
+<span class="s"> to a project space, please wait up to fifteen minutes to your</span><span class="se">\</span>
+<span class="s"> project space to appear.</span><span class="se">\n</span><span class="s">    If the problem persists, please email:</span><span class="se">\</span>
+<span class="s"> rce_services@help.hmdc.harvard.edu&quot;</span><span class="p">)</span>
+      <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">acl</span><span class="o">.</span><span class="n">__apps__</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+      <span class="k">print</span> <span class="s">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s">Project space: {0}</span>
+<span class="s">{1}</span>
+<span class="s">{2}&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span>
+              <span class="s">&#39;-&#39;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="s">&#39;Project space: {0}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">)),</span>
+              <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="ShinyACLConsole.list_users_for_application"><a class="viewcode-back" href="../../shinyacl.html#shinyacl.ShinyACLConsole.ShinyACLConsole.list_users_for_application">[docs]</a>  <span class="k">def</span> <span class="nf">list_users_for_application</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Lists users for a specified application, gathered from CLI</span>
+<span class="sd">    input.&quot;&quot;&quot;</span>
+
+    <span class="k">print</span> <span class="s">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s">{0}</span>
+<span class="s">{1}</span>
+<span class="s">{2}&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="s">&#39;-&#39;</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">app</span><span class="p">),</span> 
+  <span class="p">(</span><span class="k">lambda</span> <span class="n">users</span><span class="p">:</span> <span class="s">&quot;No users currently configured.</span><span class="se">\n</span><span class="s">&quot;</span> <span class="k">if</span> <span class="n">users</span> <span class="o">==</span> <span class="p">[]</span> <span class="k">else</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">users</span><span class="p">))(</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">acl</span><span class="o">.</span><span class="n">get_users</span><span class="p">(</span><span class="n">app</span><span class="p">)))</span>
+</div>
+<div class="viewcode-block" id="ShinyACLConsole.del_user"><a class="viewcode-back" href="../../shinyacl.html#shinyacl.ShinyACLConsole.ShinyACLConsole.del_user">[docs]</a>  <span class="k">def</span> <span class="nf">del_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Deletes a user based on CLI input&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">acl</span><span class="o">.</span><span class="n">del_user</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">user</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="ShinyACLConsole.run"><a class="viewcode-back" href="../../shinyacl.html#shinyacl.ShinyACLConsole.ShinyACLConsole.run">[docs]</a>  <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Main function. Parses arguments and runs associated commands.&quot;&quot;&quot;</span>
+
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">ArgumentParser</span><span class="p">(</span>
+      <span class="n">description</span><span class="o">=</span><span class="s">&#39;Manage RShiny server access control lists&#39;</span>
+    <span class="p">)</span>
+
+    <span class="n">group</span> <span class="o">=</span> \
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_mutually_exclusive_group</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;--list-applications&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_true&#39;</span><span class="p">,</span>
+      <span class="n">help</span><span class="o">=</span><span class="s">&#39;Lists rShiny applications available for you.&#39;</span><span class="p">)</span>
+
+    <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;--list-users&#39;</span><span class="p">,</span>
+      <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+      <span class="n">metavar</span><span class="o">=</span><span class="s">&#39;RShinyApplicationPath&#39;</span><span class="p">,</span>
+      <span class="n">help</span><span class="o">=</span><span class="s">&#39;Lists users who have access to a specified application&#39;</span><span class="p">,</span>
+      <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+
+    <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;--add-user&#39;</span><span class="p">,</span>
+     <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+     <span class="n">nargs</span><span class="o">=</span><span class="s">&#39;*&#39;</span><span class="p">,</span>
+     <span class="n">metavar</span><span class="o">=</span><span class="p">(</span><span class="s">&#39;RShinyApplicationPath&#39;</span><span class="p">,</span> <span class="s">&#39;UserEmails&#39;</span><span class="p">),</span>
+     <span class="n">help</span><span class="o">=</span><span class="s">&#39;Adds permission for a user defined by an Google e-mail</span><span class="se">\</span>
+<span class="s">address to access a specified application. Separate multiple e-mails by</span><span class="se">\</span>
+<span class="s">spaces.&#39;</span><span class="p">)</span>
+
+    <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;--del-user&#39;</span><span class="p">,</span>
+     <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+     <span class="n">nargs</span><span class="o">=</span><span class="s">&#39;*&#39;</span><span class="p">,</span>
+     <span class="n">metavar</span><span class="o">=</span><span class="p">(</span><span class="s">&#39;RShinyApplicationPath&#39;</span><span class="p">,</span> <span class="s">&#39;UserEmails&#39;</span><span class="p">),</span>
+     <span class="n">help</span><span class="o">=</span><span class="s">&#39;Removes permission for a user defined by a Google e-mail</span><span class="se">\</span>
+<span class="s">address to access a specified application.&#39;</span><span class="p">)</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">list_applications</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">list_applications</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">list_users</span><span class="p">:</span>
+      <span class="k">try</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">list_users_for_application</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">list_users</span><span class="p">)</span>
+      <span class="k">except</span> <span class="n">ShinyACLNotAShinyApp</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">print</span> <span class="n">e</span>
+      <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&quot;No such application {0} available or permission</span><span class="se">\</span>
+<span class="s"> denied</span><span class="se">\n</span><span class="s">{1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">list_users</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">add_user</span><span class="p">:</span>
+      <span class="k">try</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">acl</span><span class="o">.</span><span class="n">add_user</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">add_user</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">args</span><span class="o">.</span><span class="n">add_user</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+        <span class="k">print</span> <span class="s">u&#39;</span><span class="se">\u2705</span><span class="s">   Successfully added user(s) {0} to {1}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+          <span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">add_user</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">),</span>
+          <span class="n">args</span><span class="o">.</span><span class="n">add_user</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">))</span>
+      <span class="k">except</span> <span class="n">ShinyACLNotAShinyApp</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">print</span> <span class="n">e</span>
+      <span class="k">except</span> <span class="n">ShinyACLUserAlreadyExists</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">u&#39;</span><span class="se">\u274C</span><span class="s">   {0}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+      <span class="k">except</span> <span class="n">ShinyACLNotAValidEmail</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">u&#39;</span><span class="se">\u274C</span><span class="s">   {0}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+      <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">u&#39;</span><span class="se">\u274C</span><span class="s">   {0}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+      <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">acl</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">add_user</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">print</span> <span class="s">u&#39;</span><span class="se">\u2705</span><span class="s">   Reloaded shiny-server&#39;</span>
+    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">del_user</span><span class="p">:</span>
+      <span class="k">try</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">acl</span><span class="o">.</span><span class="n">del_user</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">del_user</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">args</span><span class="o">.</span><span class="n">del_user</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+        <span class="k">print</span> <span class="s">u&#39;</span><span class="se">\u2705</span><span class="s">   Successfully removed user(s) {0} from {1}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+          <span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">del_user</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">),</span>
+          <span class="n">args</span><span class="o">.</span><span class="n">del_user</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">))</span>
+      <span class="k">except</span> <span class="n">ShinyACLUserDoesNotExist</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">u&#39;</span><span class="se">\u274C</span><span class="s">   {0}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+      <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">u&#39;</span><span class="se">\u274C</span><span class="s">   {0}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+      <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">acl</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">del_user</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">print</span> <span class="s">u&#39;</span><span class="se">\u2705</span><span class="s">   Reloaded shiny server&#39;</span>
+
+    <span class="k">return</span> <span class="mi">0</span>
+
+      </div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Evan Sarmiento.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'1.0.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

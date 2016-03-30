@@ -1,0 +1,38 @@
+ShinyACL package
+================
+
+Submodules
+----------
+
+ShinyACL.ShinyACL module
+------------------------
+
+.. automodule:: ShinyACL.ShinyACL
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+ShinyACL.ShinyACLConsole module
+-------------------------------
+
+.. automodule:: ShinyACL.ShinyACLConsole
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+ShinyACL.ShinyACLExceptions module
+----------------------------------
+
+.. automodule:: ShinyACL.ShinyACLExceptions
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: ShinyACL
+    :members:
+    :undoc-members:
+    :show-inheritance:

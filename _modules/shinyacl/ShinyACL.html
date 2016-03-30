@@ -1,0 +1,494 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>shinyacl.ShinyACL &mdash; RShiny ACL 1.0.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="RShiny ACL 1.0.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> RShiny ACL
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../frontpage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_documentation.html">Operations/Development Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">RShiny ACL</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>shinyacl.ShinyACL</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for shinyacl.ShinyACL</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The ShinyACL module provides functionality to add and remove users from</span>
+<span class="sd">.shiny.conf files inside Shiny application directires. The ShinyACL</span>
+<span class="sd">module also handles application restarts via restart.txt when ACLs for</span>
+<span class="sd">an application has changed</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&quot;Evan Sarmiento&quot;</span>
+<span class="n">__email__</span> <span class="o">=</span> <span class="s">&quot;esarmien@g.harvard.edu&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">logging.handlers</span>
+<span class="kn">import</span> <span class="nn">pwd</span>
+<span class="kn">from</span> <span class="nn">shinyacl</span> <span class="kn">import</span> <span class="n">ShinyACLUserAlreadyExists</span><span class="p">,</span> \
+<span class="n">ShinyACLUserDoesNotExist</span><span class="p">,</span> \
+<span class="n">ShinyACLNotAShinyApp</span><span class="p">,</span> \
+<span class="n">ShinyACLNotAValidEmail</span>
+
+<span class="n">DOTRSHINYCONF_TEMPLATE</span> <span class="o">=</span> <span class="s">&quot;required_user {0};</span><span class="se">\n</span><span class="s">&quot;</span>
+
+<div class="viewcode-block" id="ShinyACL"><a class="viewcode-back" href="../../shinyacl.html#shinyacl.ShinyACL.ShinyACL">[docs]</a><span class="k">class</span> <span class="nc">ShinyACL</span><span class="p">:</span>
+  <span class="sd">&quot;&quot;&quot;The ShinyACL class provides methods which add, remove users to an </span>
+<span class="sd">  application&#39;s ACL in .shiny.conf and restarts that application.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ShinyACL.__init__"><a class="viewcode-back" href="../../shinyacl.html#shinyacl.ShinyACL.ShinyACL.__init__">[docs]</a>  <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+   <span class="n">__root__</span> <span class="o">=</span> <span class="s">&#39;{0}/shared_space&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s">&#39;~&#39;</span><span class="p">))):</span>
+   <span class="sd">&quot;&quot;&quot;ShinyACL class initialization method.</span>
+
+<span class="sd">   :param __root__: Optional, specifies where to look for shared_space</span>
+<span class="sd">                    directories</span>
+<span class="sd">   :type __root__: ``str``</span>
+<span class="sd">   </span>
+<span class="sd">   :Example:</span>
+
+<span class="sd">   &gt;&gt;&gt; from shinyacl import ShinyACL</span>
+<span class="sd">   &gt;&gt;&gt; acl = ShinyACL()</span>
+
+<span class="sd">   :Example:</span>
+
+<span class="sd">   &gt;&gt;&gt; from shinyacl import ShinyACL</span>
+<span class="sd">   &gt;&gt;&gt; acl = ShinyACL(&#39;/some/other/path&#39;)</span>
+<span class="sd">   &quot;&quot;&quot;</span>
+
+   <span class="bp">self</span><span class="o">.</span><span class="n">__root__</span> <span class="o">=</span> <span class="n">__root__</span>
+   <span class="bp">self</span><span class="o">.</span><span class="n">__project_spaces__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_shiny_project_spaces__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__root__</span><span class="p">)</span>
+   <span class="bp">self</span><span class="o">.</span><span class="n">__apps__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__build_shiny_app_tree__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__project_spaces__</span><span class="p">)</span>
+   <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+   <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">)</span>
+
+   <span class="n">handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">SysLogHandler</span><span class="p">(</span><span class="n">address</span> <span class="o">=</span> <span class="s">&#39;/dev/log&#39;</span><span class="p">)</span>
+   <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%(module)s</span><span class="s">.</span><span class="si">%(funcName)s</span><span class="s">: </span><span class="si">%(message)s</span><span class="s">&#39;</span><span class="p">)</span>
+   <span class="n">handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%(module)s</span><span class="s">.</span><span class="si">%(funcName)s</span><span class="s">: </span><span class="si">%(message)s</span><span class="s">&#39;</span><span class="p">))</span>
+
+   <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+   <span class="k">return</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="ShinyACL.__get_shiny_project_spaces__"><a class="viewcode-back" href="../../shinyacl.html#shinyacl.ShinyACL.ShinyACL.__get_shiny_project_spaces__">[docs]</a>  <span class="k">def</span> <span class="nf">__get_shiny_project_spaces__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">__root__</span><span class="p">):</span>
+   <span class="sd">&quot;&quot;&quot;Returns an array of project spaces in ``__root__`` directory.</span>
+<span class="sd">   Determines if this is a shinyserver project space by looking at</span>
+<span class="sd">   the full path of the symlink, if it includes shinyserver.</span>
+
+<span class="sd">   :param __root__: Location of shared_space project directories</span>
+<span class="sd">   :type __root__: ``str``</span>
+<span class="sd">   :rtype: ``list``</span>
+
+<span class="sd">   :Example:</span>
+
+<span class="sd">   &gt;&gt;&gt; from shinyacl import ShinyACL</span>
+<span class="sd">   &gt;&gt;&gt; ShinyACL().__get_shiny_project_spaces__(&#39;/nfs/home/E/esarmien/shared_space&#39;)</span>
+<span class="sd">   [&#39;/nfs/www/shinyserver/vpal&#39;]</span>
+
+<span class="sd">   &quot;&quot;&quot;</span>
+
+   <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="s">&#39;shinyserver&#39;</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">),</span>
+    <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__root__</span><span class="p">,</span> <span class="n">d</span><span class="p">)),</span>
+      <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">__root__</span><span class="p">)))</span>
+</div>
+<div class="viewcode-block" id="ShinyACL.__build_shiny_app_tree__"><a class="viewcode-back" href="../../shinyacl.html#shinyacl.ShinyACL.ShinyACL.__build_shiny_app_tree__">[docs]</a>  <span class="k">def</span> <span class="nf">__build_shiny_app_tree__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">projectspaces</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Builds a hash mapping of project directories to apps in those</span>
+<span class="sd">    project directories.</span>
+
+<span class="sd">    :param projectspaces: An array of project spaces, usually this is</span>
+<span class="sd">                          the resultant list from</span>
+<span class="sd">                          ``__get_shiny_project_spaces__``</span>
+<span class="sd">    :type projectspaces: ``list``</span>
+<span class="sd">    :rtype: ``dict``</span>
+<span class="sd">   </span>
+<span class="sd">    :Example:</span>
+
+<span class="sd">    &gt;&gt;&gt; from shinyacl import ShinyACL</span>
+<span class="sd">    &gt;&gt;&gt; acl = ShinyACL()</span>
+<span class="sd">    &gt;&gt;&gt; acl.__build_shiny_app_tree(acl.__get_shiny_project_spaces__(&#39;/nfs/home/E/esarmien/shared_space&#39;))</span>
+<span class="sd">    {&#39;/nfs/www/shinyserver/vpal&#39;: [&#39;/nfs/www/shinyserver/vpal/test_irt&#39;,</span>
+<span class="sd">    &#39;/nfs/www/shinyserver/vpal/irt_working&#39;,</span>
+<span class="sd">    &#39;/nfs/www/shinyserver/vpal/hello&#39;,</span>
+<span class="sd">    &#39;/nfs/www/shinyserver/vpal/courseviz&#39;,</span>
+<span class="sd">    &#39;/nfs/www/shinyserver/vpal/hello_protected&#39;]}</span>
+
+<span class="sd">    &quot;&quot;&quot;</span> 
+     
+    <span class="n">__tree__</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">projectspace</span> <span class="ow">in</span> <span class="n">projectspaces</span><span class="p">:</span>
+      <span class="n">__tree__</span><span class="p">[</span><span class="n">projectspace</span><span class="p">]</span> <span class="o">=</span> \
+        <span class="bp">self</span><span class="o">.</span><span class="n">__get_shiny_sub_apps__</span><span class="p">(</span><span class="n">projectspace</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">__tree__</span>
+</div>
+<div class="viewcode-block" id="ShinyACL.__get_shiny_sub_apps__"><a class="viewcode-back" href="../../shinyacl.html#shinyacl.ShinyACL.ShinyACL.__get_shiny_sub_apps__">[docs]</a>  <span class="k">def</span> <span class="nf">__get_shiny_sub_apps__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">projectspace</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns a list of apps belonging to an rShiny project space. A</span>
+<span class="sd">    directory is determined to be an rShiny app if it has a ``server.R``</span>
+<span class="sd">    file in it.</span>
+
+<span class="sd">    :param projectspace: Fully qualified path to project space</span>
+<span class="sd">    :type projectspace: ``str``</span>
+<span class="sd">    :rtype: ``list``</span>
+
+<span class="sd">    :Example:</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; from shinyacl import ShinyACL</span>
+<span class="sd">    &gt;&gt;&gt; ShinyACL().__get_shiny_sub_apps(&#39;/nfs/www/shinyserver/vpal&#39;)</span>
+<span class="sd">    [&#39;/nfs/www/shinyserver/vpal/test_irt&#39;,</span>
+<span class="sd">    &#39;/nfs/www/shinyserver/vpal/irt_working&#39;,</span>
+<span class="sd">    ...</span>
+<span class="sd">    ]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="s">&#39;{0}/server.R&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">d</span><span class="p">)),</span>
+        <span class="nb">filter</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">,</span> 
+          <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectspace</span><span class="p">,</span> <span class="n">d</span><span class="p">),</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">projectspace</span><span class="p">))))</span>
+ 
+  <span class="c"># UNUSED function commented out. </span>
+  <span class="c"># def __get_project_space_name__(self,path):</span>
+  <span class="c">#  return path.split(&#39;/&#39;)[-1]</span>
+</div>
+<div class="viewcode-block" id="ShinyACL.get_users"><a class="viewcode-back" href="../../shinyacl.html#shinyacl.ShinyACL.ShinyACL.get_users">[docs]</a>  <span class="k">def</span> <span class="nf">get_users</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">app</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns a list of users which are allowed to access an application.</span>
+<span class="sd">    Raises exception if the ``app`` argument is a path which is not a</span>
+<span class="sd">    RShiny application. Returns an empty array if no users or configured</span>
+<span class="sd">    or if ``.shiny_app.conf`` does not exist in the app directory.</span>
+
+<span class="sd">    :param app: Fully qualified path to application directory</span>
+<span class="sd">    :type app: ``str``</span>
+<span class="sd">    :rtype: ``list``</span>
+<span class="sd">    :raises:</span>
+<span class="sd">      :py:exc:`shinyacl.ShinyACLExceptions.ShinyACLNotAShinyApp`</span>
+<span class="sd">    </span>
+<span class="sd">    :Example:</span>
+
+<span class="sd">    &gt;&gt;&gt; from shinyacl import ShinyACL</span>
+<span class="sd">    &gt;&gt;&gt; ShinyACL().get_users(&#39;/nfs/www/shinyserver/vpal/hello&#39;)</span>
+<span class="sd">    [&#39;dtingley@g.harvard.edu&#39;, &#39;v@v.com&#39;]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>   
+
+    <span class="k">if</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="p">):</span> <span class="n">app</span> <span class="ow">in</span> <span class="n">v</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__apps__</span><span class="o">.</span><span class="n">iteritems</span><span class="p">())</span> <span class="o">==</span> <span class="p">[]:</span>
+      <span class="k">raise</span> <span class="n">ShinyACLNotAShinyApp</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+      <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;{0}/.shiny_app.conf&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">app</span><span class="p">),</span> <span class="s">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">dotshinyconf</span><span class="p">:</span>
+        <span class="n">users</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">l</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s">&#39;^required_user.*;$&#39;</span><span class="p">,</span> <span class="n">l</span><span class="p">),</span> <span class="n">dotshinyconf</span><span class="o">.</span><span class="n">readlines</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">users</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+          <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">u</span><span class="p">:</span> <span class="n">u</span> <span class="o">!=</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">users</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:])</span>
+    <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+      <span class="k">return</span> <span class="p">[]</span>
+</div>
+<div class="viewcode-block" id="ShinyACL.__write__"><a class="viewcode-back" href="../../shinyacl.html#shinyacl.ShinyACL.ShinyACL.__write__">[docs]</a>  <span class="k">def</span> <span class="nf">__write__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="n">authstring</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Writes the ``.shiny_app.conf`` file inside the app directory by</span>
+<span class="sd">       modifying the required_user line. No need to use this as higher</span>
+<span class="sd">       level methods like ``add_user`` call this function with the</span>
+<span class="sd">       proper arguments.</span>
+
+<span class="sd">    :param app: Fully qualified path to application directory</span>
+<span class="sd">    :type app: ``str``</span>
+<span class="sd">    :param authstring: The authentication line to write</span>
+<span class="sd">    :type authstring: ``str``</span>
+<span class="sd">   </span>
+<span class="sd">    :Example:</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; from shinyacl import ShinyACL</span>
+<span class="sd">    &gt;&gt;&gt; ShinyACL().write(&#39;/nfs/www/shinyserver/vpal/hello&#39;,</span>
+<span class="sd">          &#39;required_user esarmien@g.harvard.edu;&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+      
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;{0}/.shiny_app.conf&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">app</span><span class="p">),</span> <span class="s">&#39;w+&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">dotshinyconf</span><span class="p">:</span>
+      <span class="n">data</span> <span class="o">=</span> <span class="n">dotshinyconf</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+      <span class="n">line</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">index</span><span class="p">:</span> <span class="n">index</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">line</span><span class="p">:</span> <span class="bp">None</span> <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s">&#39;^required_user.*;$&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span> <span class="o">==</span> <span class="p">[]</span> <span class="k">else</span> <span class="n">dotshinyconf</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">line</span><span class="p">),</span> <span class="n">data</span><span class="p">))</span>
+
+      <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span>
+
+      <span class="c"># There is no such line in the file</span>
+      <span class="k">if</span> <span class="n">line</span> <span class="o">==</span> <span class="p">[]:</span>
+        <span class="n">dotshinyconf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">authstring</span><span class="p">);</span>
+      <span class="k">else</span><span class="p">:</span> 
+        <span class="n">data</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">authstring</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+      
+    <span class="k">return</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="ShinyACL.add_user"><a class="viewcode-back" href="../../shinyacl.html#shinyacl.ShinyACL.ShinyACL.add_user">[docs]</a>  <span class="k">def</span> <span class="nf">add_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">app</span><span class="p">,</span><span class="n">usernames</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Adds usernames to ``.shiny_app.conf`` for the specified app.</span>
+<span class="sd">    Logs action to syslog per HEISP.</span>
+
+<span class="sd">    :param app: Fully qualified path to application directory</span>
+<span class="sd">    :type app: ``str``</span>
+<span class="sd">    :param usernames: Array of usernames to add</span>
+<span class="sd">    :type usernames: ``list``</span>
+<span class="sd">    :retval: ``None``</span>
+<span class="sd">    :rtype: ``None``</span>
+<span class="sd">    :raises:</span>
+<span class="sd">      :py:exc:`shinyacl.ShinyACLExceptions.ShinyACLNotAValidEmail`</span>
+<span class="sd">    :raises:</span>
+<span class="sd">      :py:exc:`shinyacl.ShinyACLExceptions.ShinyACLUserAlreadyExists`</span>
+
+<span class="sd">    :Example:</span>
+
+<span class="sd">    &gt;&gt;&gt; from shinyacl import ShinyACL</span>
+<span class="sd">    &gt;&gt;&gt; ShinyACL().add_user(&#39;/nfs/www/shinyserver/vpal/hello&#39;,</span>
+<span class="sd">          &#39;esarmien@g.harvard.edu&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+ 
+    <span class="n">email_regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+      <span class="s">&quot;^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">username</span> <span class="ow">in</span> <span class="n">usernames</span><span class="p">:</span>
+      <span class="k">if</span> <span class="n">email_regex</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">username</span><span class="p">)</span> <span class="o">==</span> <span class="p">[]:</span>
+        <span class="k">raise</span> <span class="n">ShinyACLNotAValidEmail</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
+      <span class="k">elif</span> <span class="n">username</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_users</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">ShinyACLUserAlreadyExists</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">app</span><span class="p">)</span>
+      <span class="k">else</span><span class="p">:</span>
+        <span class="n">executing_user</span> <span class="o">=</span> <span class="n">pwd</span><span class="o">.</span><span class="n">getpwuid</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getuid</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s">&quot;{0} added user {1} to {2}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">executing_user</span><span class="p">,</span>
+          <span class="n">username</span><span class="p">,</span>
+          <span class="n">app</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__write__</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">DOTRSHINYCONF_TEMPLATE</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_users</span><span class="p">(</span><span class="n">app</span><span class="p">))</span>
+          <span class="o">+</span> <span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="n">username</span><span class="o">.</span><span class="n">strip</span><span class="p">()))</span>
+
+    <span class="k">return</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="ShinyACL.del_user"><a class="viewcode-back" href="../../shinyacl.html#shinyacl.ShinyACL.ShinyACL.del_user">[docs]</a>  <span class="k">def</span> <span class="nf">del_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">app</span><span class="p">,</span><span class="n">usernames</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Removes usernames from ``.shiny_app.conf`` for specified app.</span>
+<span class="sd">    Logs action to syslog per HEISP.</span>
+<span class="sd">    </span>
+<span class="sd">    :param app: Fully qualified path to application directory</span>
+<span class="sd">    :type app: ``str``</span>
+<span class="sd">    :param usernames: Array of usernames to add</span>
+<span class="sd">    :type usernames: ``list``</span>
+<span class="sd">    :retval: ``None``</span>
+<span class="sd">    :rtype: ``None``</span>
+<span class="sd">    :raises:</span>
+<span class="sd">      :py:exc:`shinyacl.ShinyACLExceptions.ShinyACLUserDoesNotExist`</span>
+
+<span class="sd">    :Example:</span>
+
+<span class="sd">    &gt;&gt;&gt; from shinyacl import ShinyACL</span>
+<span class="sd">    &gt;&gt;&gt; ShinyACL().del_user(&#39;/nfs/www/shinyserver/vpal/hello&#39;,</span>
+<span class="sd">          &#39;esarmien@g.harvard.edu&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">for</span> <span class="n">username</span> <span class="ow">in</span> <span class="n">usernames</span><span class="p">:</span>
+      <span class="k">if</span> <span class="n">username</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_users</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
+        <span class="n">executing_user</span> <span class="o">=</span> <span class="n">pwd</span><span class="o">.</span><span class="n">getpwuid</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getuid</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s">&quot;{0} removed user {1} from {2}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+          <span class="n">executing_user</span><span class="p">,</span>
+          <span class="n">username</span><span class="p">,</span>
+          <span class="n">app</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__write__</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">DOTRSHINYCONF_TEMPLATE</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span>
+          <span class="k">lambda</span> <span class="n">u</span><span class="p">:</span> <span class="n">u</span> <span class="o">!=</span> <span class="n">username</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_users</span><span class="p">(</span><span class="n">app</span><span class="p">)))))</span>
+      <span class="k">else</span><span class="p">:</span> 
+        <span class="k">raise</span> <span class="n">ShinyACLUserDoesNotExist</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">app</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="ShinyACL.reload"><a class="viewcode-back" href="../../shinyacl.html#shinyacl.ShinyACL.ShinyACL.reload">[docs]</a>  <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">app</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Restarts an application by touching a ``restart.txt`` file in the</span>
+<span class="sd">    application path and changing it&#39;s mtime.</span>
+
+<span class="sd">    :param app: Fully qualified path to application directory</span>
+<span class="sd">    :type app: ``str``</span>
+<span class="sd">    :retval: ``None``</span>
+<span class="sd">    :rtype: ``None``</span>
+
+<span class="sd">    :Example:</span>
+
+<span class="sd">    &gt;&gt;&gt; from shinyacl import ShinyACL</span>
+<span class="sd">    &gt;&gt;&gt; ShinyACL().reload(&#39;/nfs/www/shinyserver/vpal/hello&#39;)</span>
+<span class="sd">   </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+ 
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;{0}/restart.txt&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">app</span><span class="p">),</span> <span class="s">&#39;a+&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">restart_txt</span><span class="p">:</span>
+      <span class="n">os</span><span class="o">.</span><span class="n">utime</span><span class="p">(</span><span class="s">&#39;{0}/restart.txt&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">app</span><span class="p">),</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">None</span>    </div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Evan Sarmiento.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'1.0.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
