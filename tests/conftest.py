@@ -2,5 +2,5 @@ import pytest
 
 @pytest.fixture(scope="module")
 def shinyacl():
-  from ShinyACL import ShinyACL
+  from shinyacl import ShinyACL
   return ShinyACL

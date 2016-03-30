@@ -1,4 +1,4 @@
 #!/usr/bin/env python
-from ShinyACL import ShinyACLConsole
+from shinyacl import ShinyACLConsole
 
 exit(ShinyACLConsole().run())

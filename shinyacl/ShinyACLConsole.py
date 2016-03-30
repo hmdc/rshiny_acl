@@ -1,5 +1,12 @@
-from ShinyACL import ShinyACL
-from .ShinyACLExceptions import ShinyACLUserAlreadyExists, \
+"""
+The ShinyAClConsole module provides a CLI.
+"""
+
+__author__ = "Evan Sarmiento"
+__email__ = "esarmien@g.harvard.edu"
+
+from shinyacl import ShinyACL, \
+ShinyACLUserAlreadyExists, \
 ShinyACLUserDoesNotExist, \
 ShinyACLNotAShinyApp, \
 ShinyACLNotAValidEmail
@@ -7,9 +14,12 @@ from argparse import ArgumentParser
 
 class ShinyACLConsole:
   def __init__(self):
+    """This simply initiates a ``ShinyACL`` object."""
     self.acl = ShinyACL()
 
   def list_applications(self):
+    """Prints a tabulated list of applications belonging to user."""
+
     if self.acl.__apps__ == {}:
 
       print u'\u274C   {0}'.format("You currently have no rShiny\
@@ -30,6 +40,9 @@ Project space: {0}
     return None
 
   def list_users_for_application(self, app):
+    """Lists users for a specified application, gathered from CLI
+    input."""
+
     print """\
 {0}
 {1}
@@ -38,9 +51,12 @@ Project space: {0}
     self.acl.get_users(app)))
 
   def del_user(self, app, user):
+    """Deletes a user based on CLI input"""
     return self.acl.del_user(app, user)
 
   def run(self):
+    """Main function. Parses arguments and runs associated commands."""
+
     parser = ArgumentParser(
       description='Manage RShiny server access control lists'
     )
