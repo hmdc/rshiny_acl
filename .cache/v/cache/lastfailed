@@ -1,1 +1,3 @@
-{}
+{
+  "tests/test_shinyacl.py::TestShinyACLClass::()::test_reload": true
+}

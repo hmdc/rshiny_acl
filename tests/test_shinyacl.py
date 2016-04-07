@@ -27,6 +27,15 @@ class TestShinyACLClass:
                      os.path.dirname(os.path.realpath(__file__))))
     assert 'app1' in acl.__get_shiny_sub_apps__(
                        acl.__get_shiny_project_spaces__(acl.__root__)[0])[0]
+  
+  def test_if_shiny_subapp_indexrmd_in_list(self, shinyacl):
+    # Check if the app containing an index.Rmd shows up
+    "Using fixture, check if subapps appear."
+    acl = shinyacl("{0}/fixtures/shared_space".format(
+                     os.path.dirname(os.path.realpath(__file__))))
+    assert 'app5' in acl.__get_shiny_sub_apps__(
+                       acl.__get_shiny_project_spaces__(acl.__root__)[0])[-1]
+
 
   def test_build_shiny_app_tree(self, shinyacl):
     "Using fixture, check if tree is built properly."

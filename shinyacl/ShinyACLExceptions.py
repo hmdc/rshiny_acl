@@ -33,4 +33,4 @@ Troubleshooting
    Run the following command to list applications available to you:
       shiny_acl.py --list-applications
    Do you have the proper groups assigned to your username?
-   For assistance, email rce_services@hmdc.harvard.edu""".format(self.appdir)
+   For assistance, email rce_services@help.hmdc.harvard.edu""".format(self.appdir)

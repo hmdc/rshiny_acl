@@ -111,7 +111,7 @@ class ShinyACL:
   def __get_shiny_sub_apps__(self,projectspace):
     """Returns a list of apps belonging to an rShiny project space. A
     directory is determined to be an rShiny app if it has a ``server.R``
-    file in it.
+    or ``index.Rmd`` in it. 
 
     :param projectspace: Fully qualified path to project space
     :type projectspace: ``str``
@@ -128,7 +128,7 @@ class ShinyACL:
 
     """
 
-    return filter(lambda d: os.path.isfile('{0}/server.R'.format(d)),
+    return filter(lambda d: os.path.isfile('{0}/server.R'.format(d)) or os.path.isfile('{0}/index.Rmd'.format(d)), 
         filter(os.path.isdir, 
           map(lambda d: os.path.join(projectspace, d),
             os.listdir(projectspace))))

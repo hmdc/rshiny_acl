@@ -1,5 +1,8 @@
-Usage
-=====
+RShiny ACL
+==========
+
+What does it do?
+----------------
 
 ``rshiny_acl`` allows you to add and remove user access to your rShiny
 applications.
