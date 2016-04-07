@@ -81,7 +81,7 @@
             
             
                 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../frontpage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../frontpage.html">RShiny ACL</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../developer_documentation.html">Operations/Development Documentation</a></li>
 </ul>
 
@@ -241,7 +241,7 @@
 <div class="viewcode-block" id="ShinyACL.__get_shiny_sub_apps__"><a class="viewcode-back" href="../../shinyacl.html#shinyacl.ShinyACL.ShinyACL.__get_shiny_sub_apps__">[docs]</a>  <span class="k">def</span> <span class="nf">__get_shiny_sub_apps__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">projectspace</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Returns a list of apps belonging to an rShiny project space. A</span>
 <span class="sd">    directory is determined to be an rShiny app if it has a ``server.R``</span>
-<span class="sd">    file in it.</span>
+<span class="sd">    or ``index.Rmd`` in it. </span>
 
 <span class="sd">    :param projectspace: Fully qualified path to project space</span>
 <span class="sd">    :type projectspace: ``str``</span>
@@ -258,7 +258,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="s">&#39;{0}/server.R&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">d</span><span class="p">)),</span>
+    <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="s">&#39;{0}/server.R&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">d</span><span class="p">))</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="s">&#39;{0}/index.Rmd&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">d</span><span class="p">)),</span> 
         <span class="nb">filter</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">,</span> 
           <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectspace</span><span class="p">,</span> <span class="n">d</span><span class="p">),</span>
             <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">projectspace</span><span class="p">))))</span>

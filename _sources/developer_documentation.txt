@@ -29,7 +29,7 @@ Building the documentation
 --------------------------
 From the RCE, run::
 
-  git clone git@github.com:git@github.com:hmdc/rshiny_acl.git
+  git clone git@github.com:hmdc/rshiny_acl.git
   pip install sphinx --user --force-reinstall --upgrade
   pip install sphinx_rtd_theme --user --force-reinstall --upgrade
   cd rshiny_acl/doc
