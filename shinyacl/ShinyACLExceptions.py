@@ -9,7 +9,7 @@ class ShinyACLNotAValidEmail(Exception):
    def __init__(self, user):
     self.user = user
    def __str__(self):
-    return '{0} is not a valid e-mail address.'.format(self.user)
+    return '{0} is not a valid e-mail address or HUID.'.format(self.user)
     
 class ShinyACLUserDoesNotExist(Exception):
    def __init__(self, user, app):

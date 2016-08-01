@@ -228,12 +228,15 @@ class ShinyACL:
           'esarmien@g.harvard.edu')
 
     """
- 
+
     email_regex = re.compile(
       "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
+    huid_regex = re.compile(
+      "^[0-9]{8}$"
+    )
 
     for username in usernames:
-      if email_regex.findall(username) == []:
+      if email_regex.findall(username) == [] and huid_regex.findall(username) == []:
         raise ShinyACLNotAValidEmail(username)
       elif username in self.get_users(app):
         raise ShinyACLUserAlreadyExists(username, app)
@@ -244,6 +247,25 @@ class ShinyACL:
           app))
         self.__write__(app, DOTRSHINYCONF_TEMPLATE.format(' '.join(self.get_users(app))
           + ' ' + username.strip()))
+
+    return None
+
+  def del_all(self, app):
+    """Removes all usernames from ``.shiny_app.conf`` for specified app.
+    Logs action to syslog per HEISP.
+
+    :param app: Fully qualified path to application directory
+    
+    :Example:
+
+    >>> from shinyacl import ShinyACL
+    >>> ShinyACL().del_all('/nfs/www/shinyserver/vpal/hello')
+    """
+
+    executing_user = pwd.getpwuid(os.getuid())[0]
+    self.__write__(app, DOTRSHINYCONF_TEMPLATE.format(''))
+    self.log.critical("{0} removed all users from {1}".format(
+      executing_user, app))
 
     return None
 

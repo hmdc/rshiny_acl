@@ -78,7 +78,7 @@ Project space: {0}
      nargs='*',
      metavar=('RShinyApplicationPath', 'UserEmails'),
      help='Adds permission for a user defined by an Google e-mail\
-address to access a specified application. Separate multiple e-mails by\
+address or HUID to access a specified application. Separate multiple e-mails by\
 spaces.')
 
     group.add_argument('--del-user',
@@ -86,7 +86,12 @@ spaces.')
      nargs='*',
      metavar=('RShinyApplicationPath', 'UserEmails'),
      help='Removes permission for a user defined by a Google e-mail\
-address to access a specified application.')
+address or HUID to access a specified application.')
+
+    group.add_argument('--del-all',
+     type=str,
+     metavar='RShinyApplicationPath',
+     help='Removes all user permissions for a specified application.')
 
     args = parser.parse_args()
 
@@ -116,6 +121,18 @@ address to access a specified application.')
         print u'\u274C   {0}'.format(e)
       else:
         self.acl.reload(args.add_user[0])
+        print u'\u2705   Reloaded shiny-server'
+    elif args.del_all:
+      try:
+        self.acl.del_all(args.del_all)
+        print u'\u2705   Successfully removed all users from {0}'.format(
+          args.del_all.encode('utf-8'))
+      except ShinyACLNotAShinyApp as e:
+        print e
+      except IOError as e:
+        print u'\u274C   {0}'.format(e)
+      else:
+        self.acl.reload(args.del_all)
         print u'\u2705   Reloaded shiny-server'
     elif args.del_user:
       try:

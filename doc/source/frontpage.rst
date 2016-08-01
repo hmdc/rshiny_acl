@@ -7,8 +7,7 @@ What does it do?
 ``rshiny_acl`` allows you to add and remove user access to your rShiny
 applications.
 
-Usernames are in the form of e-mails and must be, at the moment,
-``@g.harvard.edu`` emails.
+Usernames can be in the form of ``g.harvard.edu`` email addresses or HUID.
 
 All the following commands must be run from the terminal.
 
@@ -33,7 +32,14 @@ run::
 
 To add multiple users, run::
 
-  $ rshiny_acl --add-user /nfs/www/shinyserver/myprojectspace/a test@g.harvard.edu test2@g.harvard.edu test3@g.harvard.edu
+  $ rshiny_acl --add-user /nfs/www/shinyserver/myprojectspace/a test@g.harvard.edu test2@g.harvard.edu test3@g.harvard.edu 88888888
+
+Removing all users
+------------------
+To remove all users from an application ``a``,
+run::
+
+  $ rshiny_acl --del-all /nfs/www/shinyserver/myprojectspace/a
 
 Removing a user
 ---------------
@@ -44,7 +50,7 @@ run::
 
 To add multiple users, run::
 
-  $ rshiny_acl --del-user /nfs/www/shinyserver/myprojectspace/a test@g.harvard.edu test2@g.harvard.edu test3@g.harvard.edu
+  $ rshiny_acl --del-user /nfs/www/shinyserver/myprojectspace/a test@g.harvard.edu test2@g.harvard.edu test3@g.harvard.edu 88888888
 
 Listing users
 -------------
