@@ -358,12 +358,15 @@
 <span class="sd">          &#39;esarmien@g.harvard.edu&#39;)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
- 
+
     <span class="n">email_regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
       <span class="s">&quot;^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$&quot;</span><span class="p">)</span>
+    <span class="n">huid_regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+      <span class="s">&quot;^[0-9]{8}$&quot;</span>
+    <span class="p">)</span>
 
     <span class="k">for</span> <span class="n">username</span> <span class="ow">in</span> <span class="n">usernames</span><span class="p">:</span>
-      <span class="k">if</span> <span class="n">email_regex</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">username</span><span class="p">)</span> <span class="o">==</span> <span class="p">[]:</span>
+      <span class="k">if</span> <span class="n">email_regex</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">username</span><span class="p">)</span> <span class="o">==</span> <span class="p">[]</span> <span class="ow">and</span> <span class="n">huid_regex</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">username</span><span class="p">)</span> <span class="o">==</span> <span class="p">[]:</span>
         <span class="k">raise</span> <span class="n">ShinyACLNotAValidEmail</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
       <span class="k">elif</span> <span class="n">username</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_users</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
         <span class="k">raise</span> <span class="n">ShinyACLUserAlreadyExists</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">app</span><span class="p">)</span>
@@ -374,6 +377,25 @@
           <span class="n">app</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__write__</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">DOTRSHINYCONF_TEMPLATE</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_users</span><span class="p">(</span><span class="n">app</span><span class="p">))</span>
           <span class="o">+</span> <span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="n">username</span><span class="o">.</span><span class="n">strip</span><span class="p">()))</span>
+
+    <span class="k">return</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="ShinyACL.del_all"><a class="viewcode-back" href="../../shinyacl.html#shinyacl.ShinyACL.ShinyACL.del_all">[docs]</a>  <span class="k">def</span> <span class="nf">del_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Removes all usernames from ``.shiny_app.conf`` for specified app.</span>
+<span class="sd">    Logs action to syslog per HEISP.</span>
+
+<span class="sd">    :param app: Fully qualified path to application directory</span>
+<span class="sd">    </span>
+<span class="sd">    :Example:</span>
+
+<span class="sd">    &gt;&gt;&gt; from shinyacl import ShinyACL</span>
+<span class="sd">    &gt;&gt;&gt; ShinyACL().del_all(&#39;/nfs/www/shinyserver/vpal/hello&#39;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">executing_user</span> <span class="o">=</span> <span class="n">pwd</span><span class="o">.</span><span class="n">getpwuid</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getuid</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">__write__</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">DOTRSHINYCONF_TEMPLATE</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s">&quot;{0} removed all users from {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+      <span class="n">executing_user</span><span class="p">,</span> <span class="n">app</span><span class="p">))</span>
 
     <span class="k">return</span> <span class="bp">None</span>
 </div>

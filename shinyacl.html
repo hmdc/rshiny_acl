@@ -349,6 +349,27 @@ Logs action to syslog per HEISP.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="shinyacl.ShinyACL.ShinyACL.del_all">
+<code class="descname">del_all</code><span class="sig-paren">(</span><em>app</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/shinyacl/ShinyACL.html#ShinyACL.del_all"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Removes all usernames from <code class="docutils literal"><span class="pre">.shiny_app.conf</span></code> for specified app.
+Logs action to syslog per HEISP.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>app</strong> &#8211; Fully qualified path to application directory</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">shinyacl</span> <span class="kn">import</span> <span class="n">ShinyACL</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ShinyACL</span><span class="p">()</span><span class="o">.</span><span class="n">del_all</span><span class="p">(</span><span class="s">&#39;/nfs/www/shinyserver/vpal/hello&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
 <dt id="shinyacl.ShinyACL.ShinyACL.del_user">
 <code class="descname">del_user</code><span class="sig-paren">(</span><em>app</em>, <em>usernames</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/shinyacl/ShinyACL.html#ShinyACL.del_user"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Removes usernames from <code class="docutils literal"><span class="pre">.shiny_app.conf</span></code> for specified app.

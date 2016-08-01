@@ -133,8 +133,7 @@
 <h2>What does it do?</h2>
 <p><code class="docutils literal"><span class="pre">rshiny_acl</span></code> allows you to add and remove user access to your rShiny
 applications.</p>
-<p>Usernames are in the form of e-mails and must be, at the moment,
-<code class="docutils literal"><span class="pre">&#64;g.harvard.edu</span></code> emails.</p>
+<p>Usernames can be in the form of <code class="docutils literal"><span class="pre">g.harvard.edu</span></code> email addresses or HUID.</p>
 <p>All the following commands must be run from the terminal.</p>
 </div>
 <div class="section" id="listing-your-available-applications">
@@ -157,7 +156,15 @@ run:</p>
 </pre></div>
 </div>
 <p>To add multiple users, run:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ rshiny_acl --add-user /nfs/www/shinyserver/myprojectspace/a test@g.harvard.edu test2@g.harvard.edu test3@g.harvard.edu
+<div class="highlight-python"><div class="highlight"><pre>$ rshiny_acl --add-user /nfs/www/shinyserver/myprojectspace/a test@g.harvard.edu test2@g.harvard.edu test3@g.harvard.edu 88888888
+</pre></div>
+</div>
+</div>
+<div class="section" id="removing-all-users">
+<h2>Removing all users</h2>
+<p>To remove all users from an application <code class="docutils literal"><span class="pre">a</span></code>,
+run:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ rshiny_acl --del-all /nfs/www/shinyserver/myprojectspace/a
 </pre></div>
 </div>
 </div>
@@ -169,7 +176,7 @@ run:</p>
 </pre></div>
 </div>
 <p>To add multiple users, run:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ rshiny_acl --del-user /nfs/www/shinyserver/myprojectspace/a test@g.harvard.edu test2@g.harvard.edu test3@g.harvard.edu
+<div class="highlight-python"><div class="highlight"><pre>$ rshiny_acl --del-user /nfs/www/shinyserver/myprojectspace/a test@g.harvard.edu test2@g.harvard.edu test3@g.harvard.edu 88888888
 </pre></div>
 </div>
 </div>
